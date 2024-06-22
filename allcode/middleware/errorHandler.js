@@ -5,7 +5,7 @@ const errorHandler = (err, req, res, next) => {
   switch (status) {
     case 400:
       res.json({
-        title: "Invalid Syntax",
+        title: "Wrong credentials",
         message: err.message,
         stackTrace: err.stack,
       });
