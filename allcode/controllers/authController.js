@@ -4,10 +4,10 @@ const jwt = require("jsonwebtoken");
 const asyncHandler = require("express-async-handler");
 
 exports.signUp = asyncHandler(async (req, res) => {
-  try {
+  
     const { email, password, name, avatar_url, username } = req.body;
     if (!email || !password || !username) {
-      res.status(400);
+      res.status(401);
       throw new Error("All fields are mandatroy");
     }
     //hash password
@@ -22,9 +22,7 @@ exports.signUp = asyncHandler(async (req, res) => {
     });
     if (error) throw new Error(JSON.stringify(error, null, 2));
     res.status(201).send({ data });
-  } catch (e) {
-    console.log(e);
-  }
+
 });
 // hashedjwfsdfsft
 
@@ -36,7 +34,7 @@ exports.login = asyncHandler(async (req, res) => {
   }
   const { data, error } = await supabase.rpc("login", { p_email: email });
   if (error) throw new Error(JSON.stringify(error, null, 2));
-  if (data && bcrypt.compare(password, data.password)) {
+  if (data && await bcrypt.compare(password, data.password)) {
     const accessToken = jwt.sign(
       {
         user: {
@@ -51,13 +49,10 @@ exports.login = asyncHandler(async (req, res) => {
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: "3600m" }
     );
-    res.status(200).json({accessToken})
+    res.status(201).json({accessToken})
   } else {
     res.status(401);
     throw new Error("Wrong email or password");
   }
+  res.status(401)
 });
-
-exports.accessAlbum = asyncHandler(async(req,res) => {
-    console.log("done")
-})

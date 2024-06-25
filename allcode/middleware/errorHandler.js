@@ -1,7 +1,5 @@
 const errorHandler = (err, req, res, next) => {
-    console.log(res, req)
   const status = res.statusCode ? res.statusCode : 500;
-  console.log(status)
   switch (status) {
     case 400:
       res.json({
@@ -25,11 +23,11 @@ const errorHandler = (err, req, res, next) => {
       });
       break;
     case 500:
-        res.json({
-            title: "Internal server error",
-            message: err.message,
-            stackTrace: err.stack,
-        })
+      res.json({
+        title: "Internal server error",
+        message: err.message,
+        stackTrace: err.stack,
+      });
   }
 };
-module.exports = errorHandler
+module.exports = errorHandler;
