@@ -29,7 +29,6 @@ exports.signUp = asyncHandler(async (req, res) => {
   }
   res.status(201).send({ data, token });
 });
-// hashedjwfsdfsft
 
 exports.login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;

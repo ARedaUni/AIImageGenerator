@@ -11,8 +11,10 @@ exports.accessAlbum = asyncHandler(async (req, res) => {
 });
 
 exports.createAlbum = asyncHandler(async(req,res) => {
-    const {userid, albumName} = req.body;
-    const {data, error} = await supabase.rpc("create_album", {albumname: albumName, userid});
+    const {userid, albumname, albumCover} = req.body;
+    console.log(userid, albumCover, albumname)
+    const {data, error} = await supabase.rpc("create_album", {albumname, userid, albumcover:albumCover});
+   console.log(data, error)
     if(data) res.status(201).json(data);
     else res.status(401).send(error);
 })
@@ -27,4 +29,16 @@ exports.deleteAlbum = asyncHandler(async(req,res) => {
     console.error(error); // Log the error for debugging purposes
     return res.status(400).json({ message: "Failed to delete album" });
   }
+})
+
+exports.createAlbumImage = asyncHandler(async(req,res) => {
+  res.status(200).send();
+});
+
+exports.deleteAlbumImage = asyncHandler(async(req,res) => {
+  res.status(200).send();
+});
+
+exports.getAlbumImages = asyncHandler(async(req,res) => {
+  res.status(200).send();
 })
