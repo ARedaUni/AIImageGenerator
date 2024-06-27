@@ -1,80 +1,91 @@
+"use client";
+import Cookies from "js-cookie";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
-async function signIn(formData: FormData){
-    'use server'
-      const email = formData.get("email");
-      const password = formData.get("password");
-      fetch("http://localhost:5001/users/signup", {
-          method: 'POST',
-          headers: {
-              'content-type': 'application/json',
-          },
-          body: JSON.stringify({email,password})
-      })
-  }
-  
-  export default async function login() {
-    return(
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="max-w-md w-full p-6 text-black  rounded-lg shadow-lg">
-          <div className="flex justify-center mb-8">
-            <img
-              src="A:\AIstorer\appinterface\src\images\software.png"
-              alt="Logo"
-              className="w-30 h-20"
+export default function Login() {
+  const [userData, setUserData] = useState({
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState<{ message: string } | null>(null);
+  const router = useRouter();
+
+  const signIn = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("http://localhost:5001/users/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      });
+      console.log(response)
+      if (!response.ok) {
+        throw new Error("Login failed");
+      }
+      const { data, token } = await response.json();
+      localStorage.setItem("userData", JSON.stringify(data));
+      Cookies.set("jwtToken", token, { expires: 8});
+      router.push("/albums");
+    } catch (error: any) {
+      setError(error.message);
+    }
+  };
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setUserData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  return (
+    <div className="min-h-screen flex justify-center items-center">
+      <div>
+        <h1 className="text-3xl">Login</h1>
+
+        <form
+          onSubmit={signIn}
+          className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96"
+        >
+          <div className="mb-1 flex flex-col gap-6">
+            <h6 color="blue-gray" className="-mb-3 text-base">
+              Your Email<span className="text-red-600 ml-1">*</span>
+            </h6>
+            <input
+              placeholder="name@mail.com"
+              onChange={handleChange}
+              className="border border-black focus:border-black rounded-md px-3 py-2"
+              name="email"
+              required
+            />
+
+            <h6 color="blue-gray" className="-mb-3 text-base">
+              Password<span className="text-red-600 ml-1">*</span>
+            </h6>
+            <input
+              onChange={handleChange}
+              type="password"
+              placeholder="********"
+              className="border border-black focus:border-black rounded-md px-3 py-2"
+              name="password"
+              required
             />
           </div>
-          <h1 className="text-2xl font-semibold text-center text-gray-500 mt-8 mb-6">
-            Login
-          </h1>
-          <form action={signIn}>
-            <div className="mb-6">
-              <label htmlFor="email" className="block mb-2 text-sm text-gray-600">
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                required
-              />
-            </div>
-            <div className="mb-6">
-              <label
-                htmlFor="password"
-                className="block mb-2 text-sm text-gray-600"
-              >
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                required
-              />
-              <a href="#" className="block text-right text-xs text-cyan-600 mt-2">
-                Forgot your password?
-              </a>
-            </div>
-            <button
-              type="submit"
-              className="w-32 bg-gradient-to-r from-cyan-400 to-cyan-600 text-white py-2 rounded-lg mx-auto block focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 mt-4 mb-6"
-            >
-              Access
-            </button>
-          </form>
-          <div className="text-center">
-            <p className="text-sm">
-              Don't have an account?{" "}
-              <a href="#" className="text-cyan-600">
-                Register here
-              </a>
-            </p>
-          </div>
-          <p className="text-xs text-gray-600 text-center mt-10">© 2023 WCS LAT</p>
-        </div>
+          <button type="submit" className="mt-6 justify-end items-end">
+          Sign Up
+        </button>
+        </form>
+       
+        <p color="gray" className="mt-4 text-center font-normal">
+          Already have an account?{" "}
+          <a href="/signup" className="font-medium text-gray-900">
+            Sign In
+          </a>
+        </p>
       </div>
-    )
-    }
-    
+    </div>
+  );
+}
