@@ -32,13 +32,24 @@ exports.deleteAlbum = asyncHandler(async(req,res) => {
 })
 
 exports.createAlbumImage = asyncHandler(async(req,res) => {
-  res.status(200).send();
+  const albumid = req.params.id;
+  const {name, description} = req.body;
+  const {data, error} = await supabase.rpc('createalbumimages', {name, description, albumid});
+  if (data) res.status(200).send(data);
+  else res.status(400).json(error)
 });
 
 exports.deleteAlbumImage = asyncHandler(async(req,res) => {
-  res.status(200).send();
+  const {imageid} = req.body;
+  console.log(imageid)
+  const {data, error} = await supabase.rpc('deletealbumimages', {imageid});
+  console.log(data,error);
+  if(data) if(data.id) res.status(200).send('Album Deleted Successfully');  else res.status(400).send('ImageID provided does not exist.');
+ 
 });
 
 exports.getAlbumImages = asyncHandler(async(req,res) => {
-  res.status(200).send();
+  const {data, error} = await supabase.rpc('grabalbumimages', {albumid:req.params.id, name:'firstImage', description:'image description to be userd'})
+  if (data) res.status(200).send(data);
+  else res.status(400).json(error)
 })
